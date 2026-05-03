@@ -1,0 +1,1766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Call dashboard · HLTH-2027-03-TOOL-02 · ISERD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:        #1F1B4E;
+    --navy-dark:   #15113E;
+    --navy-2:      #4A4576;
+    --navy-3:      #9492AC;
+    --navy-soft:   rgba(31, 27, 78, 0.06);
+    --navy-soft-2: rgba(31, 27, 78, 0.12);
+
+    --yellow:      #ECC528;
+    --yellow-2:    #D6B11D;
+    --yellow-soft: #FAEEAE;
+    --yellow-pale: #FDF8DD;
+
+    --bg:        #F5F5F5;
+    --bg-card:   #FFFFFF;
+    --bg-soft:   #EBEBEF;
+    --line:      rgba(31, 27, 78, 0.10);
+    --line-2:    rgba(31, 27, 78, 0.22);
+
+    --orange:    #D97706;
+    --red:       #A8312A;
+    --blue:      #1E5BA8;
+    --green:     #4F7E1F;
+
+    --sans:  'Lato', -apple-system, system-ui, sans-serif;
+    --mono:  'JetBrains Mono', 'IBM Plex Mono', ui-monospace, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--navy);
+    font-family: var(--sans);
+    font-size: 14.5px;
+    line-height: 1.55;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  .container {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+  .narrow {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  /* Sticky topbar — nav + breadcrumb together */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  /* Top navigation */
+  .topnav {
+    background: var(--navy-dark);
+    border-bottom: 2px solid var(--yellow);
+  }
+  .topnav-inner {
+    display: flex;
+    align-items: center;
+    gap: 36px;
+    padding: 14px 0;
+  }
+  .logo {
+    font-family: var(--sans);
+    font-size: 20px;
+    color: var(--yellow);
+    letter-spacing: -0.01em;
+    line-height: 1;
+    flex-shrink: 0;
+    font-weight: 900;
+  }
+  .nav-items {
+    display: flex; gap: 24px;
+    margin-left: auto;
+    margin-right: 16px;
+  }
+  .nav-items a {
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.85);
+    padding: 9px 0;
+    position: relative;
+    transition: color 0.15s ease;
+    cursor: pointer;
+    letter-spacing: 0.005em;
+  }
+  .nav-items a:hover { color: var(--yellow); }
+  .nav-items a.active { color: #fff; font-weight: 700; }
+  .nav-items a.active::after {
+    content: '';
+    position: absolute;
+    bottom: -16px;
+    left: 0; right: 0;
+    height: 2px;
+    background: var(--yellow);
+  }
+  .icon-btn {
+    width: 32px; height: 32px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 4px;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.85);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+  }
+  .icon-btn:hover { border-color: var(--yellow); color: var(--yellow); }
+
+  /* Breadcrumb */
+  .breadcrumb {
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+  }
+  .breadcrumb-inner {
+    padding: 11px 0;
+    font-size: 12px;
+    color: var(--navy-2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .breadcrumb a {
+    color: var(--navy-2);
+    transition: color 0.15s ease;
+  }
+  .breadcrumb a:hover { color: var(--navy); text-decoration: underline; text-decoration-color: var(--yellow); text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+  .breadcrumb-sep { color: var(--navy-3); opacity: 0.6; font-size: 11px; }
+  .breadcrumb-current {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .dash-label {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .dash-code {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--navy-2);
+    letter-spacing: 0.02em;
+    font-weight: 500;
+  }
+  .breadcrumb-meta {
+    margin-left: auto;
+    color: var(--navy-3);
+    font-size: 10.5px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  /* Page layout */
+  main { padding: 36px 0 24px; background: var(--bg); }
+
+  /* Hero */
+  .hero { margin-bottom: 28px; }
+  .topic {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--navy-3);
+    letter-spacing: 0.05em;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  h1 {
+    font-family: var(--sans);
+    font-size: 30px;
+    font-weight: 900;
+    line-height: 1.18;
+    letter-spacing: -0.012em;
+    color: var(--navy);
+    margin: 0 0 18px;
+  }
+  .pills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 22px; }
+  .pill {
+    font-size: 11px; font-weight: 700;
+    padding: 4px 11px;
+    border-radius: 999px;
+    background: var(--navy-soft);
+    color: var(--navy);
+    letter-spacing: 0.03em;
+    transition: background 0.15s ease;
+    cursor: pointer;
+    text-transform: uppercase;
+  }
+  .pill:hover { background: var(--navy-soft-2); }
+  .pill.cluster {
+    background: var(--yellow);
+    color: var(--navy);
+  }
+  .pill.cluster:hover { background: var(--yellow-2); }
+
+  .hero-row {
+    display: flex;
+    align-items: stretch;
+    gap: 14px;
+    margin-bottom: 0;
+  }
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+    flex: 1;
+  }
+  .m {
+    padding: 14px 18px 16px;
+    border-right: 1px solid var(--line);
+  }
+  .m:last-child { border-right: none; }
+  .m-lbl {
+    font-size: 9.5px; color: var(--navy-3);
+    letter-spacing: 0.10em; text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .m-val {
+    font-family: var(--sans);
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--navy);
+    letter-spacing: -0.012em;
+    line-height: 1.1;
+    white-space: nowrap;
+  }
+  .m-meta {
+    font-size: 10.5px; color: var(--navy-3);
+    margin-top: 4px;
+    font-family: var(--mono);
+    letter-spacing: 0.01em;
+  }
+
+  .actions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .btn {
+    font-family: var(--sans);
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid var(--line-2);
+    background: var(--bg-card);
+    color: var(--navy);
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    min-width: 200px;
+  }
+  .btn:hover { border-color: var(--navy); }
+  .btn-primary {
+    background: var(--yellow);
+    color: var(--navy);
+    border-color: var(--yellow);
+  }
+  .btn-primary:hover { background: var(--yellow-2); border-color: var(--yellow-2); }
+  .btn-arrow {
+    font-family: var(--sans);
+    font-size: 11px;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+  }
+  .btn-arrow svg { display: block; }
+
+  /* Intro paragraph */
+  .intro {
+    font-size: 15px;
+    color: var(--navy-2);
+    line-height: 1.7;
+    margin: 0 0 36px;
+    padding: 22px 0 24px;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .intro strong { color: var(--navy); font-weight: 700; }
+
+  /* Collapsible section — sections become details elements */
+  details.brief-section {
+    width: 100%;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+    scroll-margin-top: 130px;
+  }
+  details.brief-section:first-of-type {
+    border-top: 1px solid var(--line);
+  }
+  details.brief-section > summary { list-style: none; cursor: pointer; }
+  details.brief-section > summary::-webkit-details-marker { display: none; }
+
+  .s-lbl {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 0;
+    transition: opacity 0.15s ease;
+  }
+  details.brief-section > summary:hover .s-lbl { opacity: 0.78; }
+  details.brief-section[open] > summary .s-lbl { opacity: 1; }
+  .s-lbl .s-rule {
+    width: 24px;
+    height: 2px;
+    background: var(--yellow);
+    flex-shrink: 0;
+  }
+  .s-lbl .s-text {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .s-lbl .s-meta {
+    font-size: 11.5px;
+    color: var(--navy-3);
+    margin-left: 4px;
+    font-family: var(--mono);
+    letter-spacing: 0.02em;
+  }
+  .s-lbl .s-chev {
+    margin-left: auto;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--yellow);
+    color: var(--navy);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+  }
+  details.brief-section[open] > summary .s-chev { transform: rotate(180deg); }
+
+  .section-body {
+    padding: 8px 0 28px;
+  }
+
+  /* Decision factors */
+  .factors { background: var(--bg-card); border: 1px solid var(--line); border-radius: 4px; }
+  .f {
+    display: grid;
+    grid-template-columns: 12px 1fr 1.5fr;
+    gap: 18px;
+    padding: 14px 22px;
+    border-bottom: 1px solid var(--line);
+    align-items: baseline;
+  }
+  .f:last-child { border-bottom: none; }
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-top: 7px;
+  }
+  .d-orange { background: var(--orange); }
+  .d-red    { background: var(--red); }
+  .d-blue   { background: var(--blue); }
+  .d-green  { background: var(--green); }
+  .f-lbl {
+    font-size: 14px; font-weight: 700; color: var(--navy);
+    line-height: 1.3;
+  }
+  .f-txt {
+    font-size: 13.5px; color: var(--navy-2);
+    line-height: 1.55;
+  }
+
+  /* Scope cards */
+  .scope {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .s-card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 16px 18px 18px;
+    transition: border-color 0.2s ease;
+  }
+  .s-card:hover {
+    border-color: var(--yellow);
+  }
+  .s-num {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--yellow-2);
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .s-h { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 6px; line-height: 1.3; }
+  .s-t { font-size: 13px; color: var(--navy-2); line-height: 1.55; }
+  .scope-meta {
+    margin-top: 14px;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--navy-2);
+  }
+  .scope-intro {
+    font-size: 13px;
+    color: var(--navy-2);
+    line-height: 1.6;
+    margin: 4px 0 18px;
+    max-width: 80ch;
+  }
+  .scope-intro strong {
+    color: var(--navy);
+    font-weight: 700;
+  }
+
+  /* Full call topic description (nested inside YR&I) */
+  details.topic-detail {
+    margin-top: 22px;
+  }
+  details.topic-detail > summary { list-style: none; cursor: pointer; }
+  details.topic-detail > summary::-webkit-details-marker { display: none; }
+  .topic-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px 12px 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    transition: border-color 0.15s ease;
+    user-select: none;
+    gap: 12px;
+  }
+  .topic-toggle:hover { border-color: var(--yellow); }
+  details.topic-detail[open] .topic-toggle {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    background: var(--bg-soft);
+  }
+  details.topic-detail[open] .topic-toggle .chev-circle { transform: rotate(180deg); }
+  .topic-toggle-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+  .topic-toggle-meta {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--navy-3);
+    letter-spacing: 0.04em;
+    margin-left: auto;
+    margin-right: 4px;
+  }
+  .topic-body {
+    padding: 22px 26px 18px;
+    border: 1px solid var(--line);
+    border-top: none;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    background: var(--bg-card);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--navy-2);
+  }
+  .topic-body h4 {
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    margin: 22px 0 10px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+  }
+  .topic-body h4:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+  .topic-body p {
+    margin: 0 0 12px;
+  }
+  .topic-body p:last-of-type { margin-bottom: 0; }
+  .topic-body strong {
+    color: var(--navy);
+    font-weight: 700;
+  }
+  .topic-body ul {
+    margin: 0 0 14px;
+    padding: 0 0 0 20px;
+    list-style-type: disc;
+  }
+  .topic-body ul li {
+    margin-bottom: 6px;
+  }
+  .topic-body ul li:last-child { margin-bottom: 0; }
+  .topic-body ul li::marker { color: var(--navy-3); }
+  .topic-collapse {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 22px;
+    padding: 8px 14px;
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--navy);
+    background: var(--bg-card);
+    border: 1px solid var(--line-2);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .topic-collapse:hover { border-color: var(--navy); background: var(--bg-soft); }
+
+  /* Consortium */
+  .banner {
+    background: var(--yellow-pale);
+    border: 1px solid var(--yellow-soft);
+    border-left: 3px solid var(--yellow);
+    border-radius: 4px;
+    padding: 13px 20px;
+    margin-bottom: 12px;
+    font-size: 13.5px;
+    color: var(--navy);
+    line-height: 1.6;
+  }
+  .banner b { font-weight: 900; }
+
+  /* Inner disclosure (role breakdown) */
+  details.inner { width: 100%; }
+  details.inner > summary { list-style: none; cursor: pointer; }
+  details.inner > summary::-webkit-details-marker { display: none; }
+
+  .disclose-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 18px 11px 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    transition: border-color 0.15s ease, background 0.15s ease;
+    user-select: none;
+  }
+  .disclose-toggle:hover { border-color: var(--yellow); }
+  details.inner[open] .disclose-toggle {
+    border-color: var(--line);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    background: var(--bg-soft);
+  }
+  .toggle-label {
+    font-size: 12px; font-weight: 700; color: var(--navy);
+    display: flex; align-items: center; gap: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .toggle-count {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--navy-2);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .chev-circle {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--yellow);
+    color: var(--navy);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+  }
+  details.inner[open] .chev-circle { transform: rotate(180deg); }
+  details.o-cat[open] .chev-circle { transform: rotate(180deg); }
+  .disclose-body {
+    border: 1px solid var(--line);
+    border-top: none;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    padding: 16px;
+    background: var(--bg-card);
+  }
+
+  .roles {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .r {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 14px 16px;
+    transition: border-color 0.2s ease;
+    cursor: pointer;
+    position: relative;
+  }
+  .r:hover {
+    border-color: var(--yellow);
+  }
+  .r-name {
+    font-size: 13.5px; font-weight: 700; color: var(--navy);
+    line-height: 1.3; margin-bottom: 5px;
+  }
+  .r-type {
+    font-size: 10px; color: var(--navy-3);
+    font-family: var(--mono);
+    margin-bottom: 10px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .r-note { font-size: 12.5px; color: var(--navy-2); line-height: 1.5; margin-bottom: 0; }
+
+  /* Org categories */
+  .o-intro {
+    margin: 0 0 22px;
+    font-size: 12.5px;
+    color: var(--navy-2);
+    line-height: 1.6;
+  }
+  .o-intro::after {
+    content: '';
+    display: block;
+    clear: both;
+  }
+  .o-intro-text {
+    margin: 0;
+  }
+  .o-intro-text a {
+    color: var(--navy);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: var(--yellow);
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 3px;
+    transition: text-decoration-thickness 0.15s ease;
+  }
+  .o-intro-text a:hover {
+    text-decoration-thickness: 2.5px;
+  }
+  .o-intro-map {
+    float: right;
+    width: 150px;
+    margin: 4px 0 8px 22px;
+  }
+  .o-intro-map img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    border: 1px solid var(--line);
+  }
+  .o-intro-map figcaption {
+    font-size: 9.5px;
+    color: var(--navy-3);
+    text-align: center;
+    margin-top: 5px;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: 0.01em;
+  }
+  .o-cat { margin-bottom: 6px; }
+  .o-cat > summary { list-style: none; cursor: pointer; }
+  .o-cat > summary::-webkit-details-marker { display: none; }
+  .o-cat-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px 12px 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    transition: border-color 0.15s ease;
+    user-select: none;
+  }
+  .o-cat-toggle:hover { border-color: var(--yellow); }
+  details.o-cat[open] .o-cat-toggle {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    background: var(--bg-soft);
+  }
+  .o-cat-h {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1.3;
+  }
+  .o-cat-meta {
+    display: flex; align-items: center; gap: 12px;
+    flex-shrink: 0;
+  }
+  .o-cat-count {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--navy-2);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .o-cat-body {
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-top: none;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    background: var(--bg-card);
+  }
+  .o-cat-s {
+    font-size: 12.5px; color: var(--navy-2);
+    margin-bottom: 12px; line-height: 1.55;
+    max-width: 64ch;
+  }
+  .o-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .o {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 12px 14px 14px;
+    transition: border-color 0.2s ease;
+    cursor: pointer;
+  }
+  .o:hover { border-color: var(--yellow); }
+  .o-name { font-size: 13px; font-weight: 700; color: var(--navy); }
+  .o-meta {
+    font-size: 10px; color: var(--navy-3);
+    font-family: var(--mono);
+    margin: 3px 0 7px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .o-focus { font-size: 12px; color: var(--navy-2); line-height: 1.5; }
+  .o.placeholder {
+    border-style: dashed;
+    background: transparent;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 80px;
+    color: var(--navy-3);
+    font-size: 11px;
+    font-family: var(--mono);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    cursor: default;
+    font-weight: 500;
+  }
+  .o.placeholder:hover { border-color: var(--line); }
+
+  /* Project list inside each organisation */
+  .orgs-list { display: block; }
+  .org-country { display: none; }
+  .o-name-wrap {
+    display: inline;
+    min-width: 0;
+  }
+  .org-link {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+  .org-link:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--yellow);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+  }
+  .o-type {
+    font-size: 11.5px;
+    font-weight: 400;
+    color: var(--navy-3);
+    margin-left: 8px;
+    white-space: nowrap;
+  }
+  .o-type::before {
+    content: '·';
+    margin-right: 8px;
+    color: var(--navy-3);
+  }
+  .org-desc {
+    font-size: 12.5px;
+    color: var(--navy-2);
+    line-height: 1.6;
+    margin: 4px 0 14px;
+    max-width: 80ch;
+  }
+  .org-il-collab {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    font-size: 12px;
+    color: var(--navy-2);
+    line-height: 1.55;
+    margin: 0 0 14px;
+  }
+  .org-il-collab b {
+    font-weight: 700;
+    color: var(--navy);
+  }
+  .il-flag {
+    display: inline-block;
+    width: 18px;
+    height: 13px;
+    border: 0.5px solid var(--line-2);
+    border-radius: 1px;
+    overflow: hidden;
+    flex-shrink: 0;
+    position: relative;
+    top: 1px;
+  }
+  .il-flag svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .o-flag {
+    display: inline-block;
+    width: 20px;
+    height: 13px;
+    vertical-align: middle;
+    margin-right: 10px;
+    border: 0.5px solid var(--line-2);
+    border-radius: 1px;
+    overflow: hidden;
+    position: relative;
+    top: -1px;
+  }
+  .o-flag svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .org-projects-head {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--navy-3);
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    margin: 0 0 6px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+  }
+  a.proj-acronym {
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+  a.proj-acronym:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--yellow);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+  }
+  .roles-head {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--navy-3);
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    margin: 18px 0 10px;
+  }
+  .proj {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .proj:last-child { border-bottom: none; padding-bottom: 4px; }
+  .proj-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 5px;
+  }
+  .proj-acronym {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+  .proj-budget {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--navy);
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+  }
+  .proj-budget.zero {
+    color: var(--navy-3);
+    font-weight: 400;
+  }
+  .proj-title {
+    font-size: 13px;
+    color: var(--navy-2);
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+  .proj-title a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+  .proj-title a:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--yellow);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+  }
+  .proj-kw {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .proj-kw span {
+    background: var(--bg-soft);
+    color: var(--navy-2);
+    font-size: 10.5px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-weight: 500;
+    line-height: 1.55;
+  }
+
+  /* Related calls grid (now inside main column) */
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .rc {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 16px 18px 18px;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  .rc:hover {
+    border-color: var(--yellow);
+  }
+  .rc-tag {
+    font-size: 9px;
+    color: var(--navy);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+    font-weight: 900;
+    display: inline-block;
+    background: var(--yellow);
+    padding: 3px 8px;
+    border-radius: 3px;
+    align-self: flex-start;
+  }
+  .rc-topic {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--navy-3);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    font-weight: 500;
+  }
+  .rc-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1.3;
+    margin-bottom: 14px;
+    flex-grow: 1;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+    transition: text-decoration-color 0.2s ease;
+  }
+  .rc:hover .rc-title { text-decoration-color: var(--yellow); }
+  .rc-meta {
+    display: flex; gap: 5px; flex-wrap: wrap;
+    font-size: 9.5px;
+    color: var(--navy-2);
+  }
+  .rc-meta span {
+    background: var(--navy-soft);
+    color: var(--navy);
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* Footer */
+  footer {
+    background: var(--navy-dark);
+    color: rgba(255, 255, 255, 0.78);
+    padding: 36px 0 44px;
+    border-top: 3px solid var(--yellow);
+    margin-top: 36px;
+  }
+  .foot-grid {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 36px;
+    align-items: start;
+  }
+  .foot-meta {
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.10em;
+    color: var(--yellow);
+    margin-bottom: 10px;
+    font-weight: 700;
+  }
+  .foot-text { font-size: 12px; line-height: 1.65; color: rgba(255, 255, 255, 0.78); }
+  .foot-text strong { color: #fff; font-weight: 700; }
+  .foot-links {
+    display: flex; flex-direction: column; gap: 8px; align-items: flex-end;
+  }
+  .foot-links a {
+    font-size: 11.5px; color: rgba(255, 255, 255, 0.78);
+    border-bottom: 1px solid transparent;
+    transition: color 0.15s ease, border-color 0.15s ease;
+    cursor: pointer;
+    padding-bottom: 1px;
+    font-weight: 400;
+  }
+  .foot-links a:hover { color: var(--yellow); border-bottom-color: var(--yellow); }
+
+  /* Page-load animation */
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .hero, .intro, details.brief-section, footer {
+    animation: rise 0.5s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+  }
+  .hero                         { animation-delay: 0.04s; }
+  .intro                        { animation-delay: 0.09s; }
+  details.brief-section:nth-of-type(1)  { animation-delay: 0.14s; }
+  details.brief-section:nth-of-type(2)  { animation-delay: 0.18s; }
+  details.brief-section:nth-of-type(3)  { animation-delay: 0.22s; }
+  details.brief-section:nth-of-type(4)  { animation-delay: 0.26s; }
+  details.brief-section:nth-of-type(5)  { animation-delay: 0.30s; }
+  footer                                 { animation-delay: 0.36s; }
+  @media (prefers-reduced-motion: reduce) {
+    .hero, .intro, details.brief-section, footer { animation: none; }
+    .chev-circle, .s-chev { transition: none; }
+  }
+
+  /* Responsive */
+  @media (max-width: 880px) {
+    .container, .narrow { padding: 0 20px; }
+    .topnav-inner { gap: 14px; padding: 12px 0; }
+    .logo { font-size: 17px; }
+    .nav-items { gap: 14px; margin-right: 0; overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; }
+    .nav-items::-webkit-scrollbar { display: none; }
+    .nav-items a { font-size: 12px; flex-shrink: 0; padding: 7px 0; }
+    .breadcrumb-meta { display: none; }
+    h1 { font-size: 24px; max-width: none; }
+    .intro { font-size: 14px; padding: 16px 0 18px; }
+    .hero-row { flex-direction: column; gap: 10px; }
+    .actions { flex-direction: row; }
+    .actions .btn { flex: 1; min-width: 0; }
+    .metrics { grid-template-columns: repeat(2, 1fr); }
+    .m:nth-child(2) { border-right: none; }
+    .m:nth-child(1), .m:nth-child(2) { border-bottom: 1px solid var(--line); }
+    .scope { grid-template-columns: 1fr; }
+    .roles { grid-template-columns: repeat(2, 1fr); }
+    .o-grid { grid-template-columns: repeat(2, 1fr); }
+    .related-grid { grid-template-columns: 1fr; }
+    .f { grid-template-columns: 12px 1fr; gap: 12px 14px; padding: 14px 18px; }
+    .f-lbl { grid-column: 2; margin-bottom: 4px; }
+    .f-txt { grid-column: 2; }
+    .o-cat-h { font-size: 13px; }
+    .foot-grid { grid-template-columns: 1fr; }
+    .o-intro { display: flex; flex-direction: column-reverse; gap: 14px; }
+    .o-intro-map { float: none; width: 100%; max-width: 320px; margin: 0 auto; align-self: center; }
+    .foot-links { align-items: flex-start; flex-direction: row; flex-wrap: wrap; gap: 14px; }
+  }
+  @media (max-width: 480px) {
+    .roles, .o-grid { grid-template-columns: 1fr; }
+    h1 { font-size: 22px; }
+    .actions { flex-direction: column; }
+    .actions .btn { font-size: 11px; padding: 7px 12px; }
+    .pill { font-size: 10px; padding: 4px 10px; }
+    .breadcrumb-inner { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <nav class="topnav">
+    <div class="container topnav-inner">
+      <a class="logo" href="#">Horizon Brief</a>
+      <div class="nav-items">
+        <a>About us</a>
+        <a>Horizon Programmes</a>
+        <a class="active">Calls</a>
+        <a>Find a partner</a>
+        <a>Support</a>
+        <a>Events</a>
+        <a>Contact</a>
+      </div>
+      <button class="icon-btn demo-btn" title="Search (demo)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      </button>
+    </div>
+  </nav>
+
+  <div class="breadcrumb">
+    <div class="container breadcrumb-inner">
+      <a>Home</a>
+      <span class="breadcrumb-sep">»</span>
+      <a>Calls</a>
+      <span class="breadcrumb-sep">»</span>
+      <a>Cluster 1: Health</a>
+      <span class="breadcrumb-sep">»</span>
+      <span class="breadcrumb-current">
+        <span class="dash-label">Call dashboard:</span>
+        <span class="dash-code">HLTH-2027-03-TOOL-02</span>
+      </span>
+      <span class="breadcrumb-meta">Last verified · 22 Mar 2026</span>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <div class="narrow">
+
+    <section class="hero">
+      <div class="topic">HORIZON-HLTH-2027-03-TOOL-02</div>
+      <h1>Advancing bio-printing of living cells for regenerative medicine</h1>
+      <div class="pills">
+        <span class="pill">Research &amp; Innovation Action</span>
+        <span class="pill cluster">Cluster 1 · Health</span>
+        <span class="pill">TRL 4–7</span>
+      </div>
+
+      <div class="hero-row">
+        <div class="metrics">
+          <div class="m">
+            <div class="m-lbl">Per project</div>
+            <div class="m-val">€7–10m</div>
+            <div class="m-meta">≈ 4 grants</div>
+          </div>
+          <div class="m">
+            <div class="m-lbl">Total budget</div>
+            <div class="m-val">€39.30m</div>
+            <div class="m-meta">100% funding</div>
+          </div>
+          <div class="m">
+            <div class="m-lbl">Eval. threshold</div>
+            <div class="m-val">4 / 5</div>
+            <div class="m-meta">cumulative ≥ 12</div>
+          </div>
+          <div class="m">
+            <div class="m-lbl">Deadline</div>
+            <div class="m-val">22-09-2027</div>
+            <div class="m-meta">≥ 3 partners / 3 MS</div>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn btn-primary demo-btn">Save <span class="btn-arrow">★</span></button>
+          <button class="btn demo-btn">Share <span class="btn-arrow"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></span></button>
+          <a class="btn demo-btn" href="https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/HORIZON-HLTH-2027-03-TOOL-02" target="_blank" rel="noopener">Full call on EU portal <span class="btn-arrow">↗</span></a>
+        </div>
+      </div>
+    </section>
+
+    <p class="intro">
+      A research-and-innovation call within Cluster 1 (Health) targeting the translation of bio-printing of living cells from advanced preclinical work into <strong>first-in-human clinical studies</strong>. Approximately four projects of €7–10m each will be funded at full RIA cost coverage. The call's distinguishing demand is regulatory: proposals must integrate ATMP, medical device, SoHO and pharmaceutical frameworks in a single coherent pathway.
+    </p>
+
+    <details class="brief-section" id="decision">
+      <summary>
+        <div class="s-lbl">
+          <span class="s-rule"></span>
+          <span class="s-text">Key decision factors</span>
+          <span class="s-meta">Essential requirements and conditions</span>
+          <span class="s-chev">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </span>
+        </div>
+      </summary>
+      <div class="section-body">
+        <div class="factors">
+          <div class="f">
+            <span class="dot d-orange" aria-hidden="true"></span>
+            <div class="f-lbl">Combined regulatory frameworks</div>
+            <div class="f-txt">Proposals must address ATMP, medical device, SoHO, and pharmaceutical regulations — often in combination. The most distinctive expertise this call demands; secure it early.</div>
+          </div>
+          <div class="f">
+            <span class="dot d-orange" aria-hidden="true"></span>
+            <div class="f-lbl">High evaluation bar</div>
+            <div class="f-txt">Thresholds are 4/5 per criterion (vs. the standard 3/5), with a cumulative ≥ 12. This is quality-over-quantity selection.</div>
+          </div>
+          <div class="f">
+            <span class="dot d-blue" aria-hidden="true"></span>
+            <div class="f-lbl">Clinical studies are expected</div>
+            <div class="f-txt">Not a pre-clinical-only call. The budget must cover a credible path to first-in-human data.</div>
+          </div>
+          <div class="f">
+            <span class="dot d-red" aria-hidden="true"></span>
+            <div class="f-lbl">IP retention clause</div>
+            <div class="f-txt">The EU may object to ownership transfer or exclusive licensing of results for up to four years after project end.</div>
+          </div>
+          <div class="f">
+            <span class="dot d-green" aria-hidden="true"></span>
+            <div class="f-lbl">US entities are eligible</div>
+            <div class="f-txt">Unusual under Horizon. A strong US partner can boost Excellence and signal transatlantic competitiveness.</div>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <details class="brief-section" id="scope">
+      <summary>
+        <div class="s-lbl">
+          <span class="s-rule"></span>
+          <span class="s-text">Your research and innovation</span>
+          <span class="s-meta">Scope of the call</span>
+          <span class="s-chev">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </span>
+        </div>
+      </summary>
+      <div class="section-body">
+        <p class="scope-intro">All three activities below must be addressed in a single proposal, delivered by an <strong>international interdisciplinary consortium</strong> spanning engineering, cell biology, biomedical research and clinical practice.</p>
+        <div class="scope">
+          <div class="s-card">
+            <div class="s-num">01 / Equipment</div>
+            <div class="s-h">Bio-printing equipment</div>
+            <div class="s-t">A complete bio-printing suite producing high cell-density constructs with improved vascularisation.</div>
+          </div>
+          <div class="s-card">
+            <div class="s-num">02 / Manufacturing</div>
+            <div class="s-h">GMP-compliant scale-up</div>
+            <div class="s-t">Translate the printing technology into a conforming manufacturing process.</div>
+          </div>
+          <div class="s-card">
+            <div class="s-num">03 / Pathway</div>
+            <div class="s-h">Regulatory &amp; clinical pathway</div>
+            <div class="s-t">All regulatory groundwork plus first-in-human clinical studies.</div>
+          </div>
+        </div>
+        <div class="scope-meta">Any disease, dysfunction, or defect is eligible. Priority approaches: bio-printing of vital internal organs followed by surgical grafting, and in-situ (intraoperative) bio-printing via printhead or endoscope. Human cells only.</div>
+
+        <details class="topic-detail" id="topic-full">
+          <summary>
+            <div class="topic-toggle">
+              <span class="topic-toggle-label">Full call topic description</span>
+              <span class="topic-toggle-meta">Verbatim from EU F&amp;T Portal</span>
+              <span class="chev-circle">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+              </span>
+            </div>
+          </summary>
+          <div class="topic-body">
+            <h4>Expected outcomes</h4>
+            <p>This topic aims at supporting activities that are enabling or contributing to one or several expected impacts of destination "Developing and using new tools, technologies and digital solutions for a healthy society". To that end, proposals under this topic should aim to deliver results that are directed at, tailored towards and contributing to most of the following expected outcomes:</p>
+            <ul>
+              <li><strong>Biomedical scientists</strong> from academia and industry will gain access to entire bio-printing units designed to regenerate human tissue.</li>
+              <li><strong>Healthcare professionals</strong> acquire information on the safe and effective use of equipment enabling advanced therapies with bio-printed human tissue.</li>
+              <li><strong>Healthcare providers</strong> dispose of tools enabling them to treat conditions of unmet medical need.</li>
+              <li><strong>Individual patients</strong> will benefit from a personalised approach to their respective medical condition thanks to the bio-printed regenerative medicine solution.</li>
+            </ul>
+
+            <h4>Scope &amp; background</h4>
+            <p>Tissue-specific functional 3D bio-printing of living cells has made significant progress as a new approach for transplantation applications in regenerative medicine. There are currently several types of bio-printing technologies under development for the repair of different targeted tissues or organs. To fully unleash the potential of bio-printed cell constructs for regenerative medicine several bottlenecks still need to be overcome.</p>
+            <p>Various studies in pre-clinical models have shown that bio-printed cell constructs or tissues hold great promise for regenerative medicine, by allowing autologous tissue grafts being printed thus avoiding adverse graft-host reactions. <strong>However, translation of such approaches into clinical settings (i.e. humans) and their application to internal organs still needs to be investigated and demonstrated.</strong></p>
+            <p>Dependant on the actual target site (i.e. the defect tissue or organ in the human body) different bio-printing approaches may be preferable:</p>
+            <ul>
+              <li>For printing <strong>complex tissues and especially entire organs</strong>, an in-vitro approach followed by transplantation is the preferred way.</li>
+              <li><strong>"In-situ" bio-printing</strong> — sometimes also referred to as "in-vivo" or "intraoperative" — reflects a bioprinting process performed on a live subject in a surgical setting, and has in certain instances (e.g. tissue repair) advantages over an in-vitro bio-printing technique followed by transplantation. In-situ bio-printing involves direct patterning of bio-inks onto a patient's body at the target site, allowing for precise construction of a site-matching tissue-structure within the actual physiological location where regeneration or repair is needed. As such, in-situ bio-printing allows for high adaptability, reduced risk of contamination, improved cell viability, function and host integration.</li>
+            </ul>
+            <p><strong>The high cell densities present in the human vital organs underscore the importance of bio-inks which contain less additional biomaterials as matrix.</strong> Hence the bio-printing of cell constructs that comprise native tissue-like cell densities may facilitate repair and/or regeneration of defective complex tissues or internal organs. For such approaches <strong>meticulous engineering of the bio-printing equipment is necessary</strong>, involving sophisticated micro-surgical instrumentation and medical imaging platforms.</p>
+            <p>To achieve the desired function and to mimic the natural cues in native tissues, in-vitro printed bio-constructs require the use of additional stimuli, whereas in-situ approaches normally rely on the body as natural bioreactor providing the necessary extracellular cues. Recently, combinations of in-situ bio-printing with real-time stimuli have been investigated, even for the repair of internal organs. However, there remain bottlenecks that need to be overcome, like:</p>
+            <ul>
+              <li>The <strong>integration with existing imaging modalities and surgical procedures</strong></li>
+              <li>The <strong>long-time stability and functionality</strong> of the created bio-constructs</li>
+            </ul>
+
+            <h4>Required activities</h4>
+            <p>To address these challenges, researchers should work in <strong>multidisciplinary teams with engineers, biomedical scientists, cell biologists and medical doctors</strong>. Proposals should be based on the use of <strong>human cells</strong> and address <strong>all</strong> the following activities:</p>
+            <ul>
+              <li><strong>Develop or improve existing bioprinting equipment</strong> that comprises all steps of the bio-printing suite to print bio-constructs with high cell-density for improved vascularisation and faster repair of the defect in the body.</li>
+              <li><strong>Scale-up the chosen bio-printing technology</strong> to a Good Manufacturing Practices (GMP) conform/compliant manufacturing process.</li>
+              <li><strong>Perform all necessary regulatory work</strong> enabling the conduct of clinical studies and assess the clinical value of the developed bio-printing technology in first in-human studies.</li>
+            </ul>
+            <p><strong>Priority should be given to bio-printing approaches that either:</strong></p>
+            <ul>
+              <li>Target <strong>vital internal organs followed by surgical grafting</strong>, or</li>
+              <li>Employ <strong>in-situ approaches</strong> depositing the cell-laden bioink directly from the printhead or endoscope on the defect target site in the body.</li>
+            </ul>
+
+            <h4>Regulatory framework</h4>
+            <p><strong>Regulatory knowledge of the field is desired</strong> and should be documented through contacts with relevant national or international European regulatory authorities. A good understanding of the different steps involved and the inherent risks in each of these steps will be a basis to identify appropriate safety and quality requirements.</p>
+            <p>Requirements from the different established EU frameworks should be considered for manufacturing/preparation as well as for clinical outcome monitoring:</p>
+            <ul>
+              <li><strong>Substances of Human Origin (SoHO)</strong></li>
+              <li><strong>Medical devices</strong></li>
+              <li><strong>Pharmaceuticals</strong>, including Advanced Therapy Medicinal Products (ATMPs)</li>
+            </ul>
+            <p><strong>A combination of requirements from different frameworks</strong> might be most appropriate to allow for responsible and fast uptake.</p>
+
+            <h4>Eligibility &amp; administrative notes</h4>
+            <ul>
+              <li>Proposals under this topic may address <strong>any therapeutic area</strong>, i.e. any disease, dysfunction or defect.</li>
+              <li><strong>Sex differences at the cellular level</strong> should be taken into consideration.</li>
+              <li><strong>Preclinical stage and clinical development</strong> are eligible.</li>
+              <li>The involvement of <strong>small and medium-sized enterprises (SMEs)</strong> is encouraged.</li>
+              <li>The European Commission's <strong>Joint Research Centre (JRC)</strong> may contribute to the proposals selected for funding with work on strategic technologies for economic security and innovative industrial ecosystems, particularly activities on innovation in vitro biotechnologies.</li>
+              <li>Applicants should provide details of their <strong>clinical studies in the dedicated annex</strong> using the template provided in the submission system. As proposals under this topic are expected to include clinical studies, the use of the template is strongly encouraged.</li>
+            </ul>
+
+            <button class="topic-collapse" type="button">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+              Collapse description
+            </button>
+          </div>
+        </details>
+      </div>
+    </details>
+
+    <details class="brief-section" id="consortium">
+      <summary>
+        <div class="s-lbl">
+          <span class="s-rule"></span>
+          <span class="s-text">Who you'll need</span>
+          <span class="s-meta">Consortium target &amp; 9 roles</span>
+          <span class="s-chev">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </span>
+        </div>
+      </summary>
+      <div class="section-body">
+        <div class="banner">
+          <b>8–12 partners</b> from <b>5–7 EU MS / Associated Countries</b> · <b>≥1 Widening</b> country (Portugal, Czech Republic, Poland, Greece, Estonia, Croatia) · SMEs and a dedicated regulatory partner strongly encouraged.
+        </div>
+
+        <div class="roles-head">Consortium roles breakdown</div>
+        <div class="roles">
+            <div class="r">
+              <div class="r-name">Coordinator</div>
+              <div class="r-type">Research university / RTO</div>
+              <div class="r-note">Steers a multi-strand workplan: tech, GMP, regulatory, and FIH trials in parallel.</div>
+            </div>
+            <div class="r">
+              <div class="r-name">Bio-printing tech developer</div>
+              <div class="r-type">University / RTO / SME</div>
+              <div class="r-note">Owns the printing suite the project will harden from prototype to GMP-compliant equipment.</div>
+            </div>
+            <div class="r">
+              <div class="r-name">Cell biology &amp; tissue eng. lab</div>
+              <div class="r-type">University / RTO</div>
+              <div class="r-note">Develops bio-inks; validates viability in vascularised, high-density constructs.</div>
+            </div>
+            <div class="r">
+              <div class="r-name">Clinical partner</div>
+              <div class="r-type">Hospital — HES / PUB</div>
+              <div class="r-note">Hosts the FIH study; ideally with combined ATMP / medical-device trial experience.</div>
+            </div>
+            <div class="r">
+              <div class="r-name">Regulatory affairs expert</div>
+              <div class="r-type">SME or consultancy</div>
+              <div class="r-note">Navigates the rare combined ATMP / device / SoHO / pharma pathway — keystone expertise.</div>
+            </div>
+            <div class="r">
+              <div class="r-name">GMP manufacturing &amp; scale-up</div>
+              <div class="r-type">SME or industry</div>
+              <div class="r-note">Translates the printed-construct workflow into a GMP-compliant clinical-grade process.</div>
+            </div>
+            <div class="r">
+              <div class="r-name">Medical device &amp; instrumentation</div>
+              <div class="r-type">SME or industry</div>
+              <div class="r-note">Grafting or endoscopic delivery tools for surgical implantation or in-situ deposition.</div>
+            </div>
+            <div class="r">
+              <div class="r-name">Medical imaging partner</div>
+              <div class="r-type">University / RTO / SME</div>
+              <div class="r-note">Intraoperative guidance and post-implant tracking — critical for in-situ printing.</div>
+            </div>
+            <div class="r">
+              <div class="r-name">Ethics &amp; patient engagement</div>
+              <div class="r-type">Patient org, CSO, or ELSI university</div>
+              <div class="r-note">Anchors ethics and patient-voice work that FIH regenerative-medicine attracts heightened scrutiny on.</div>
+            </div>
+        </div>
+      </div>
+    </details>
+
+    <details class="brief-section" id="organisations">
+      <summary>
+        <div class="s-lbl">
+          <span class="s-rule"></span>
+          <span class="s-text">Organisations to know</span>
+          <span class="s-meta">Top recent grant-winners</span>
+          <span class="s-chev">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </span>
+        </div>
+      </summary>
+      <div class="section-body">
+        <div class="o-intro">
+          <figure class="o-intro-map">
+            <img src="data:image/jpeg;base64,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" alt="Heatmap of European countries by relevant grant winners" />
+            <figcaption>Density of recent grant winners across Europe</figcaption>
+          </figure>
+          <p class="o-intro-text">Ranked by number of recent Horizon Europe grants whose topics overlap with this call — bio-printing, regenerative medicine, ATMPs, and clinical translation. Projects shown for each organisation are the relevant subset of their portfolio. To make contact, browse organisation profiles in the <a href="https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/how-to-participate/participant-register-search?isExactMatch=true&amp;type=ORGANISATION&amp;order=DESC&amp;pageNumber=1&amp;pageSize=50&amp;sortBy=lastModified" target="_blank" rel="noopener">EU Participant Register</a> or post matchmaking requests on the <a href="https://www.b2match.com/e/cluster-health-horizon-europe-brokerage-2026/components/67683" target="_blank" rel="noopener">Health Cluster brokerage marketplace</a>.</p>
+        </div>
+
+        <div id="orgs-list" class="orgs-list"></div>
+      </div>
+    </details>
+
+    <details class="brief-section" id="related">
+      <summary>
+        <div class="s-lbl">
+          <span class="s-rule"></span>
+          <span class="s-text">Related calls</span>
+          <span class="s-meta">Adjacent Cluster 1 calls</span>
+          <span class="s-chev">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </span>
+        </div>
+      </summary>
+      <div class="section-body">
+        <div class="related-grid">
+          <div class="rc">
+            <div class="rc-tag">Same cluster</div>
+            <div class="rc-topic">HORIZON-HLTH-2026-04-DISEASE-12</div>
+            <div class="rc-title">Advanced therapies for rare genetic disorders</div>
+            <div class="rc-meta"><span>Cluster 1</span><span>RIA</span><span>Closes 12-04-2027</span></div>
+          </div>
+          <div class="rc">
+            <div class="rc-tag">Similar consortium</div>
+            <div class="rc-topic">HORIZON-HLTH-2027-02-TOOL-05</div>
+            <div class="rc-title">AI-driven medical imaging for in-situ surgical guidance</div>
+            <div class="rc-meta"><span>Cluster 1</span><span>RIA</span><span>Closes 14-03-2027</span></div>
+          </div>
+          <div class="rc">
+            <div class="rc-tag">Overlapping expertise</div>
+            <div class="rc-topic">HORIZON-HLTH-2027-01-CARE-08</div>
+            <div class="rc-title">GMP scale-up of advanced cell &amp; gene therapies</div>
+            <div class="rc-meta"><span>Cluster 1</span><span>IA</span><span>Closes 22-06-2027</span></div>
+          </div>
+        </div>
+      </div>
+    </details>
+
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-meta">Source &amp; verification</div>
+        <div class="foot-text">EU Funding &amp; Tenders Portal · CORDIS · partner publications and CVs.<br>
+        <strong>Last verified 22-03-2026</strong> · Re-verify currency before outreach.</div>
+      </div>
+      <div class="foot-links">
+        <a>Methodology</a>
+        <a>Submit a correction</a>
+        <a>Newsletter</a>
+        <a>Contact ISERD</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function() {
+
+  // ---------- Organisations data + render ----------
+  const orgsData = [
+    {
+      display: "Charité - Universitätsmedizin Berlin",
+      type: "University hospital",
+      website: "https://www.charite.de/en/",
+      description: "Berlin's university hospital and medical faculty, with 4 campuses, 17 CharitéCenters and around 24,332 employees including 5,741 researchers/physicians (2024). Strongest fit here as a clinical and translational partner — cancer, rare-disease, ATMP and trial experience — rather than a core bio-printing technology lead.",
+      country: "DE", countryFull: "Germany",
+      israeliCollab: { has: true, partners: "Bar-Ilan University, Ministry of Health (via ERDERA)" },
+      projects: [
+        { acronym: "4D PICTURE", budget: 9033750, title: "Design-based Data-Driven Decision-support Tools: Producing Improved Cancer Outcomes Through User-Centred Research", keywords: "personalized care", url: "https://4dpicture.eu/" },
+        { acronym: "CTGCT", budget: 14067762, title: "Centre of Excellence for the Technologies of Gene and Cell Therapy", keywords: "advanced therapeutic medicinal products, translational medicine", url: "https://ctgct.si/en/" },
+        { acronym: "ERDERA", budget: 145830556, title: "European Rare Diseases Research Alliance", keywords: "atmps, translational research, clinical trials", url: "https://erdera.org/" },
+        { acronym: "MAYA", budget: 5998796, title: "Smart mirrors supporting healthier lives of adolescents and young adults after cancer", keywords: "living labs, personalised care", url: "https://maya-horizon.eu/" },
+        { acronym: "Sagittarius", budget: 5999765, title: "A precision medicine trial leveraging blood-based tumor genomics to optimize treatment in operable stage III and high-risk stage II colon cancer patients", keywords: "personalised adjuvant therapy, personalised care", url: "https://sagittarius-horizon.eu/en/" }
+      ]
+    },
+    {
+      display: "UMC Utrecht",
+      type: "University medical centre",
+      website: "https://www.umcutrecht.nl/en",
+      description: "One of the Netherlands' largest academic medical centres, with over 1,100 beds and more than 12,000 employees, organised around six multidisciplinary research programmes including Regenerative Medicine. Very strong direct fit: its Biofabrication theme builds functional tissues for organ repair using 3D bioprinting, and it coordinated Re-COLL on collagen/cartilage regeneration.",
+      country: "NL", countryFull: "Netherlands",
+      israeliCollab: { has: false },
+      projects: [
+        { acronym: "CTGCT", budget: 14067762, title: "Centre of Excellence for the Technologies of Gene and Cell Therapy", keywords: "advanced therapeutic medicinal products, translational medicine", url: "https://ctgct.si/en/" },
+        { acronym: "ORGESTRA", budget: 3455309, title: "Organoid technologies for disease modeling, drug discovery and development for rare diseases", keywords: "clinical trial design, personalised disease model", url: "https://www.orgestra.eu/" },
+        { acronym: "Re-COLL", budget: 2500000, title: "Restoring the structural collagen network in the regeneration of cartilage", keywords: "biofabrication, bioprinting", url: "https://www.maldalab.org/research" },
+        { acronym: "STRONG-UR", budget: 7811628, title: "Strategies for optimised bioprinting of next-generation tissues for urethral regeneration and translation", keywords: "regenerative medicine, tissue engineering, materials engineering, 3d printing, bioprinting", url: "https://www.strong-ur.eu/" },
+        { acronym: "TheRaCil", budget: 7425447, title: "Therapies for renal ciliopathies", keywords: "personalised medicine, clinical trial readiness", url: "https://theracil.eu/" }
+      ]
+    },
+    {
+      display: "KU Leuven",
+      type: "Research university",
+      website: "https://www.kuleuven.be/english",
+      description: "A major Belgian research university with a strong biomedical-engineering base and 10,216 peer-reviewed publications in 2023. Direct fit through biomaterials and tissue-engineering work using additive manufacturing and bioprinting, plus relevant CORDIS activity in 3D.FETOPRINT and NEOLIVER — a credible materials/tissue-engineering partner.",
+      country: "BE", countryFull: "Belgium",
+      israeliCollab: { has: true, partners: "Bar-Ilan University, Ministry of Health (via ERDERA)" },
+      projects: [
+        { acronym: "3D.FETOPRINT", budget: 1972500, title: "In-situ fetoscopic 3D bioprinting for spina bifida treatment", keywords: "tissue engineering, bioprinting", url: "https://research.kuleuven.be/portal/en/project/3M240321" },
+        { acronym: "ERDERA", budget: 145830556, title: "European Rare Diseases Research Alliance", keywords: "atmps, translational research, clinical trials", url: "https://erdera.org/" },
+        { acronym: "NEOLIVER", budget: 7964893, title: "Automated generation of dense, functional and perfusable bioprinted liver constructs for transplantation", keywords: "transplantation, manufacturing", url: "https://neoliver.eu/" },
+        { acronym: "ORGESTRA", budget: 3455309, title: "Organoid technologies for disease modeling, drug discovery and development for rare diseases", keywords: "clinical trial design, personalised disease model", url: "https://www.orgestra.eu/" }
+      ]
+    },
+    {
+      display: "Fraunhofer-Gesellschaft",
+      type: "Research & Technology organisation",
+      website: "https://www.fraunhofer.de/en.html",
+      description: "Europe's leading applied research organisation, with more than 30,000 employees, 74 institutes and an annual budget of about €3.6 billion. Highly relevant where the project needs applied translation: Fraunhofer IGB and TLC-RT cover human-cell tissue models, biomaterials, process development, scale-up, prototypes and industry-facing regenerative-medicine routes.",
+      country: "DE", countryFull: "Germany",
+      israeliCollab: { has: true, partners: "Bar-Ilan University, Ministry of Health (via ERDERA)" },
+      projects: [
+        { acronym: "COMFORTAGE", budget: 17591490, title: "Prediction, monitoring and personalized recommendations for prevention and relief of dementia and frailty", keywords: "personalised treatment, personalised prevention", url: "https://comfortage.eu/" },
+        { acronym: "CREATIC", budget: 14999906, title: "Central European Advanced Therapy and Immunotherapy Centre", keywords: "living drugs, advanced therapy medicinal products, personalised medicine", url: "https://creatic.muni.cz/" },
+        { acronym: "ERDERA", budget: 145830556, title: "European Rare Diseases Research Alliance", keywords: "atmps, translational research, clinical trials", url: "https://erdera.org/" },
+        { acronym: "PERAMEDIC", budget: 1726877, title: "Personalised adaptive medicine", keywords: "3d printing, personalised medicine", url: "https://perame.eu/" }
+      ]
+    },
+    {
+      display: "INSERM",
+      type: "Public research organisation",
+      website: "https://www.inserm.fr/en/home/",
+      description: "France's only public research organisation entirely dedicated to human health, with a 2025 initial budget of €1.225 billion and a workforce of 2,194 researchers, 2,820 engineers/technicians and 6,678 teacher/hospital researchers in Inserm units. Strong coordinator/clinical network value here, especially for translational health, ATMP and rare-disease interfaces — less obviously a specialist bio-printing technology lead.",
+      country: "FR", countryFull: "France",
+      israeliCollab: { has: true, partners: "Bar-Ilan University, Ministry of Health (via ERDERA)" },
+      projects: [
+        { acronym: "ERDERA", budget: 145830556, title: "European Rare Diseases Research Alliance", keywords: "atmps, translational research, clinical trials", url: "https://erdera.org/" },
+        { acronym: "HEAT-UP", budget: 242261, title: "Heat exposure and antihypertensive treatment: unravelling causal pathways", keywords: "clinical practice, clinical guidelines", url: "https://cordis.europa.eu/project/id/101210291" },
+        { acronym: "HT-ADVANCE", budget: 8649617, title: "Improving treatment efficacy in hypertension by biomarker-guided personalised decision support", keywords: "therapeutic response, personalised medicine", url: "https://ht-advance.eu/" },
+        { acronym: "TheRaCil", budget: 7425447, title: "Therapies for renal ciliopathies", keywords: "personalised medicine, clinical trial readiness", url: "https://theracil.eu/" }
+      ]
+    },
+    {
+      display: "University College Dublin",
+      type: "Research university",
+      website: "https://www.ucd.ie/",
+      description: "Large Irish research-intensive university with around 32,000 students and 2,442 academic and research-funded staff (2023/24). Relevant through its Tissue Engineering and Regenerative Medicine section and Centre for Biomedical Engineering — biomaterials, 3D cell culture, and engineering-to-clinic translation.",
+      country: "IE", countryFull: "Ireland",
+      israeliCollab: { has: true, partners: "Bar-Ilan University, Ministry of Health (via ERDERA), Technion R&D Foundation, Mana Bio (via INT2ACT)" },
+      projects: [
+        { acronym: "ERDERA", budget: 145830556, title: "European Rare Diseases Research Alliance", keywords: "atmps, translational research, clinical trials", url: "https://erdera.org/" },
+        { acronym: "EVEREST", budget: 1311000, title: "Extracellular vesicle research exchanges for advanced biomarkers and therapeutics", keywords: "clinical biomarkers, biomanufacturing, therapeutics", url: "https://everest-consortium.com/" },
+        { acronym: "INT2ACT", budget: 4533813, title: "Innovative nucleic acids technologies for analysis, detection and treatment", keywords: "therapeutic nucleic acids delivery, personalised medicine", url: "https://int2act.eu/" },
+        { acronym: "SHIELD", budget: 4725090, title: "Strategies for healing implant-associated infections and enhancing longevity in devices", keywords: "regenerative medicine, translational models", url: "https://www.shield-dn.eu/en" }
+      ]
+    },
+    {
+      display: "Radboud UMC",
+      type: "University medical centre",
+      website: "https://www.radboudumc.nl/en",
+      description: "Nijmegen university medical centre with substantial clinical volume — 215,347 patients, 490,755 consults and 30,354 surgeries in 2024. Relevant as a clinical and biomaterials partner: its Regenerative Biomaterials group develops biomaterial-based therapies for hard-tissue regeneration. Fit is more biomaterials/clinical translation than bioprinting leadership.",
+      country: "NL", countryFull: "Netherlands",
+      israeliCollab: { has: true, partners: "Bar-Ilan University, Ministry of Health (via ERDERA)" },
+      projects: [
+        { acronym: "ENDEAVOR", budget: 6726489, title: "Endoscopic brush cytology and single-cell clonal dynamics of early oesophageal adenocarcinoma for detecting cost-effective surveillance strategies and prediction of cancer recurrence", keywords: "personalised medicine, clinical trial", url: "https://endeavoreu.com/" },
+        { acronym: "ERDERA", budget: 145830556, title: "European Rare Diseases Research Alliance", keywords: "atmps, translational research, clinical trials", url: "https://erdera.org/" },
+        { acronym: "HT-ADVANCE", budget: 8649617, title: "Improving treatment efficacy in hypertension by biomarker-guided personalised decision support", keywords: "therapeutic response, personalised medicine", url: "https://ht-advance.eu/" },
+        { acronym: "TheRaCil", budget: 7425447, title: "Therapies for renal ciliopathies", keywords: "personalised medicine, clinical trial readiness", url: "https://theracil.eu/" }
+      ]
+    },
+    {
+      display: "Maastricht University",
+      type: "Research university",
+      website: "https://www.maastrichtuniversity.nl/",
+      description: "Dutch international research university with 23,324 enrolled students in 2024 — 61% foreign students across 134 nationalities — and roughly 5,000 staff. Very strong direct fit through MERLN (Institute for Technology-Inspired Regenerative Medicine), focused on smart biomaterials and bioprinting including kidney/nephron bioprinting and biofabrication of living-cell constructs.",
+      country: "NL", countryFull: "Netherlands",
+      israeliCollab: { has: true, partners: "Bar-Ilan University, Ministry of Health (via ERDERA)" },
+      projects: [
+        { acronym: "ERDERA", budget: 145830556, title: "European Rare Diseases Research Alliance", keywords: "atmps, translational research, clinical trials", url: "https://erdera.org/" },
+        { acronym: "KeratOPrinter", budget: 7999581, title: "Advanced 4D printing technologies in corneal regeneration: a pathway to restored vision", keywords: "biofabrication, bioprinting, bioink, atmp", url: "https://www.keratoprinter-project.eu/" },
+        { acronym: "MELISSA", budget: 6061709, title: "Mobile artificial intelligence solution for diabetes adaptive care", keywords: "personalised treatment, clinical validation", url: "https://www.melissa-diabetes.eu/" },
+        { acronym: "OviChip", budget: 2318530, title: "The biofabrication of a 3D in vitro human oviduct model to study infertility and factors affecting embryo development", keywords: "biofabrication, tissue engineering", url: "https://merlninstitute.com/news-and-events/news/paul-wieringa-receives-erc-starting-grant" }
+      ]
+    }
+  ];
+
+  function formatBudget(n) {
+    if (!n) return { text: '—', zero: true };
+    if (n < 1000000) return { text: '€' + n.toLocaleString('en-US'), zero: false };
+    const m = n / 1000000;
+    const trimmed = m.toFixed(2).replace(/\.?0+$/, '');
+    return { text: '€' + trimmed + 'm', zero: false };
+  }
+
+  function parseKeywords(s) {
+    return s.split(',').map(k => k.trim()).filter(Boolean);
+  }
+
+  function escapeHtml(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function flagSvg(cc) {
+    const flags = {
+      'DE': '<svg viewBox="0 0 3 2" preserveAspectRatio="none"><rect width="3" height="0.667" fill="#000000"/><rect y="0.667" width="3" height="0.667" fill="#DD0000"/><rect y="1.333" width="3" height="0.667" fill="#FFCE00"/></svg>',
+      'NL': '<svg viewBox="0 0 3 2" preserveAspectRatio="none"><rect width="3" height="0.667" fill="#AE1C28"/><rect y="0.667" width="3" height="0.667" fill="#FFFFFF"/><rect y="1.333" width="3" height="0.667" fill="#21468B"/></svg>',
+      'BE': '<svg viewBox="0 0 3 2" preserveAspectRatio="none"><rect width="1" height="2" fill="#000000"/><rect x="1" width="1" height="2" fill="#FAE042"/><rect x="2" width="1" height="2" fill="#ED2939"/></svg>',
+      'FR': '<svg viewBox="0 0 3 2" preserveAspectRatio="none"><rect width="1" height="2" fill="#0055A4"/><rect x="1" width="1" height="2" fill="#FFFFFF"/><rect x="2" width="1" height="2" fill="#EF4135"/></svg>',
+      'IE': '<svg viewBox="0 0 3 2" preserveAspectRatio="none"><rect width="1" height="2" fill="#169B62"/><rect x="1" width="1" height="2" fill="#FFFFFF"/><rect x="2" width="1" height="2" fill="#FF883E"/></svg>',
+      'IL': '<svg viewBox="0 0 11 8" preserveAspectRatio="xMidYMid meet"><rect width="11" height="8" fill="#FFFFFF"/><rect y="1" width="11" height="0.7" fill="#0038B8"/><rect y="6.3" width="11" height="0.7" fill="#0038B8"/><polygon points="5.5,2.7 6.626,4.65 4.374,4.65" fill="none" stroke="#0038B8" stroke-width="0.22"/><polygon points="5.5,5.3 4.374,3.35 6.626,3.35" fill="none" stroke="#0038B8" stroke-width="0.22"/></svg>'
+    };
+    return flags[cc] || '';
+  }
+
+  const orgsList = document.getElementById('orgs-list');
+  if (orgsList) {
+    const chevSvg = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>';
+    const html = orgsData.map(org => {
+      const projs = org.projects.map(p => {
+        const b = formatBudget(p.budget);
+        const kws = parseKeywords(p.keywords);
+        const kwHtml = kws.map(k => '<span>' + escapeHtml(k) + '</span>').join('');
+        const acronymHtml = p.url
+          ? '<a class="proj-acronym" href="' + escapeHtml(p.url) + '" target="_blank" rel="noopener">' + escapeHtml(p.acronym) + '</a>'
+          : '<span class="proj-acronym">' + escapeHtml(p.acronym) + '</span>';
+        const titleHtml = p.url
+          ? '<a href="' + escapeHtml(p.url) + '" target="_blank" rel="noopener">' + escapeHtml(p.title) + '</a>'
+          : escapeHtml(p.title);
+        return (
+          '<div class="proj">' +
+            '<div class="proj-head">' +
+              acronymHtml +
+              '<span class="proj-budget' + (b.zero ? ' zero' : '') + '">' + b.text + '</span>' +
+            '</div>' +
+            '<div class="proj-title">' + titleHtml + '</div>' +
+            (kwHtml ? '<div class="proj-kw">' + kwHtml + '</div>' : '') +
+          '</div>'
+        );
+      }).join('');
+      const grantsLabel = org.projects.length + ' relevant grant' + (org.projects.length === 1 ? '' : 's');
+
+      const orgNameHtml = org.website
+        ? '<a class="org-link" href="' + escapeHtml(org.website) + '" target="_blank" rel="noopener">' + escapeHtml(org.display) + '</a>'
+        : escapeHtml(org.display);
+
+      const ilHtml = org.israeliCollab.has
+        ? '<div class="org-il-collab"><span class="il-flag">' + flagSvg('IL') + '</span><span><b>Israeli partners:</b> ' + escapeHtml(org.israeliCollab.partners) + '</span></div>'
+        : '';
+
+      return (
+        '<details class="o-cat">' +
+          '<summary>' +
+            '<div class="o-cat-toggle">' +
+              '<div class="o-cat-h">' +
+                '<span class="o-flag">' + flagSvg(org.country) + '</span>' +
+                '<span class="o-name-wrap">' + orgNameHtml + '<span class="o-type">' + escapeHtml(org.type) + '</span></span>' +
+              '</div>' +
+              '<div class="o-cat-meta">' +
+                '<span class="o-cat-count">' + grantsLabel + '</span>' +
+                '<span class="chev-circle">' + chevSvg + '</span>' +
+              '</div>' +
+            '</div>' +
+          '</summary>' +
+          '<div class="o-cat-body">' +
+            '<p class="org-desc">' + escapeHtml(org.description) + '</p>' +
+            ilHtml +
+            '<div class="org-projects-head">Relevant grants</div>' +
+            projs +
+          '</div>' +
+        '</details>'
+      );
+    }).join('');
+    orgsList.innerHTML = html;
+
+    // Stop link clicks inside summaries from toggling the accordion
+    orgsList.querySelectorAll('a.org-link').forEach(a => {
+      a.addEventListener('click', e => e.stopPropagation());
+    });
+  }
+
+  // ---------- Topic-detail collapse button ----------
+  document.querySelectorAll('.topic-collapse').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      e.preventDefault();
+      const details = btn.closest('details');
+      if (details) {
+        details.open = false;
+        details.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // ---------- Press feedback for demo buttons ----------
+  document.querySelectorAll('.demo-btn, .btn, .nav-items a, .pill, .breadcrumb a, .rc, .o, .r, .foot-links a').forEach(btn => {
+    btn.addEventListener('click', e => {
+      if (btn.tagName === 'A' && btn.getAttribute('href') && btn.getAttribute('href') !== '#') return;
+      if (btn.classList.contains('o') && btn.classList.contains('placeholder')) return;
+      e.preventDefault?.();
+      btn.style.transition = 'transform 0.15s ease';
+      btn.style.transform = 'scale(0.985)';
+      setTimeout(() => { btn.style.transform = ''; }, 160);
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
