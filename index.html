@@ -67,11 +67,14 @@
   .topbar {
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 200000;
+    isolation: isolate;
   }
 
   /* Top navigation */
   .topnav {
+    position: relative;
+    z-index: 2;
     background: var(--navy-dark);
     border-bottom: 2px solid var(--yellow);
   }
@@ -131,6 +134,8 @@
 
   /* Breadcrumb */
   .breadcrumb {
+    position: relative;
+    z-index: 1;
     background: var(--bg);
     border-bottom: 1px solid var(--line);
   }
