@@ -284,6 +284,67 @@
   }
 
   /* TRL hover panel */
+  .ria-pill-wrap {
+    position: relative;
+    z-index: 3200;
+    border: none;
+    appearance: none;
+    -webkit-appearance: none;
+    font-family: var(--sans);
+    line-height: 1.55;
+    overflow: visible;
+  }
+  .ria-pill-label { display: inline-block; }
+  .ria-hover-card {
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 0;
+    width: 430px;
+    background: #FFFFFF;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 15px 17px;
+    box-shadow: 0 16px 36px rgba(31, 27, 78, 0.18);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: transform 0.18s ease, visibility 0.18s ease;
+    z-index: 99999;
+    isolation: isolate;
+    text-transform: none;
+    letter-spacing: normal;
+    text-align: left;
+    cursor: default;
+    color: var(--navy-2);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.62;
+    white-space: normal;
+  }
+  .ria-hover-card::before {
+    content: '';
+    position: absolute;
+    left: 22px;
+    top: -7px;
+    width: 12px;
+    height: 12px;
+    background: #FFFFFF;
+    border-left: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    transform: rotate(135deg);
+  }
+  .ria-pill-wrap:hover .ria-hover-card,
+  .ria-pill-wrap:focus-visible .ria-hover-card,
+  .ria-pill-wrap.is-open .ria-hover-card {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  .ria-pill-wrap:focus-visible {
+    outline: 2px solid var(--yellow);
+    outline-offset: 2px;
+  }
+
   .trl-pill-wrap {
     position: relative;
     z-index: 3200;
@@ -1318,6 +1379,23 @@
     .foot-links { align-items: flex-start; flex-direction: row; flex-wrap: wrap; gap: 14px; }
   }
   @media (max-width: 880px) {
+    .ria-hover-card {
+      top: calc(100% + 12px);
+      left: 0;
+      width: min(92vw, 430px);
+      transform: translateY(6px);
+    }
+    .ria-hover-card::before {
+      left: 18px;
+      top: -7px;
+      transform: rotate(135deg);
+    }
+    .ria-pill-wrap:hover .ria-hover-card,
+    .ria-pill-wrap:focus-visible .ria-hover-card,
+    .ria-pill-wrap.is-open .ria-hover-card {
+      transform: translateY(0);
+    }
+
     .trl-hover-card {
       top: calc(100% + 12px);
       left: 0;
@@ -1392,7 +1470,12 @@
       <div class="topic">HORIZON-HLTH-2027-03-TOOL-02</div>
       <h1>Advancing bio-printing of living cells for regenerative medicine</h1>
       <div class="pills">
-        <span class="pill">Research &amp; Innovation Action</span>
+        <button type="button" class="pill ria-pill-wrap" aria-label="Show Research and Innovation Action explanation" aria-expanded="false">
+          <span class="ria-pill-label">Research &amp; Innovation Action</span>
+          <span class="ria-hover-card" aria-hidden="true">
+            A Research and Innovation Action (RIA) under the EU's Horizon program is a collaborative grant designed to establish new knowledge or explore the feasibility of new technologies, processes, or solutions. These projects primarily focus on fundamental and applied research, technology development, and small-scale testing or prototyping.
+          </span>
+        </button>
         <span class="pill cluster">Cluster 1 · Health</span>
         <button type="button" class="pill trl-pill-wrap" aria-label="Show relevant TRL stages for this call" aria-expanded="false">
           <span class="trl-pill-label">TRL 4–7</span>
@@ -1462,12 +1545,12 @@
           <div class="m">
             <div class="m-lbl">Per project</div>
             <div class="m-val">€7–10m</div>
-            <div class="m-meta">≈ 4 grants</div>
+            <div class="m-meta">100% funding</div>
           </div>
           <div class="m">
             <div class="m-lbl">Total budget</div>
             <div class="m-val">€39.30m</div>
-            <div class="m-meta">100% funding</div>
+            <div class="m-meta">≈ 4 grants</div>
           </div>
           <div class="m">
             <div class="m-lbl">Call type</div>
@@ -1476,7 +1559,7 @@
           </div>
           <div class="m">
             <div class="m-lbl">Deadline</div>
-            <div class="m-val">22-09-2027</div>
+            <div class="m-val">22 SEPT 2027</div>
             <div class="m-meta">≥ 3 partners / 3 MS</div>
           </div>
         </div>
@@ -2018,6 +2101,33 @@
     });
   });
 
+  // ---------- RIA hover card: click/touch fallback ----------
+  const riaPill = document.querySelector('.ria-pill-wrap');
+
+  if (riaPill) {
+    riaPill.addEventListener('click', e => {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      const isOpen = riaPill.classList.toggle('is-open');
+      riaPill.setAttribute('aria-expanded', String(isOpen));
+    });
+
+    document.addEventListener('click', e => {
+      if (!riaPill.contains(e.target)) {
+        riaPill.classList.remove('is-open');
+        riaPill.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        riaPill.classList.remove('is-open');
+        riaPill.setAttribute('aria-expanded', 'false');
+        riaPill.blur();
+      }
+    });
+  }
+
   // ---------- TRL hover card: click/touch fallback ----------
   const trlPill = document.querySelector('.trl-pill-wrap');
 
@@ -2048,7 +2158,7 @@
   // ---------- Press feedback for demo buttons ----------
   document.querySelectorAll('.demo-btn, .btn, .nav-items a, .pill, .breadcrumb a, .rc, .o, .r, .foot-links a').forEach(btn => {
     btn.addEventListener('click', e => {
-      if (btn.classList && btn.classList.contains('trl-pill-wrap')) return;
+      if (btn.classList && (btn.classList.contains('trl-pill-wrap') || btn.classList.contains('ria-pill-wrap'))) return;
       if (btn.tagName === 'A' && btn.getAttribute('href') && btn.getAttribute('href') !== '#') return;
       if (btn.classList.contains('o') && btn.classList.contains('placeholder')) return;
       e.preventDefault?.();
